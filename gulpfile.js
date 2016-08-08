@@ -64,27 +64,7 @@ gulp.task('watch', function () {
     gulp.watch(js_files, ['scripts']);
 });
 
-gulp.task('webserver', function () {
-    gulp.src('dist')
-        .pipe(webserver({
-            livereload: true,
-            port: 8080,
-            open: true
-        }))
-});
-
-/*gulp.task('webserver', function () {
-    webserver.server({
-        root: 'public',
-        port: 3000,
-        host: '192.168.1.200',
-        fallback: 'index.html',
-        livereload: true
-    });
-});*/
-
-
-gulp.task('default', ['copy-html', 'scripts', 'bootstrap', 'less', 'cssmin', 'watch', 'webserver']);
+gulp.task('default', ['copy-html', 'scripts', 'bootstrap', 'less', 'cssmin', 'watch']);
 
 function outputError (error) {
     console.log(error.toString());
