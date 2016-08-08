@@ -1,12 +1,12 @@
 {
-  "name": "justin-portfolio",
+  "name": "package-json-template",
   "version": "1.0.0",
-  "description": "My personal portfolio and first foray into gulp and angular",
+  "description": "package-description",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Justin Paelmo",
+  "author": "ASNet",
   "license": "ISC",
   "devDependencies": {
     "gulp": "^3.9.1",
