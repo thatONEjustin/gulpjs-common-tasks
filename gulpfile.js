@@ -17,7 +17,7 @@ var webserver = require('gulp-webserver');
 
 //File Paths
 var less_files = ['build/css/**.less', '!build/css/helpers.less'];
-var html_files = ['build/**/**.html'];
+var html_files = ['build/**/**.html', 'build/**/**.cfm'];
 var js_files   = ['build/js/**.js'];
 
 gulp.task('bootstrap', function () {
