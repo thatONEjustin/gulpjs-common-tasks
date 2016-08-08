@@ -1,0 +1,22 @@
+{
+  "name": "justin-portfolio",
+  "version": "1.0.0",
+  "description": "My personal portfolio and first foray into gulp and angular",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Paelmo",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-cached": "^1.1.0",
+    "gulp-connect": "^5.0.0",
+    "gulp-copy": "0.0.2",
+    "gulp-less": "^3.1.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-watch": "^4.3.9",
+    "gulp-webserver": "^0.9.1"
+  }
+}
