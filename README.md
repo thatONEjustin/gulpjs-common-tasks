@@ -55,3 +55,10 @@ __It's important to note that the new WATCH task is an actual stream, if a file 
 ```sh
 M:\path\to\site\> gulp
 ```
+
+# If you're going from the grunt to gulp build you'll need to do some simple steps:
+
+#### 1. Delete the following directories/files
+__http://imgur.com/khOYQdF__
+
+#### 2. Follow the steps above
