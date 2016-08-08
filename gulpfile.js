@@ -13,11 +13,10 @@ var rename = require('gulp-rename');
 
 //LocalWebserver
 var webserver = require('gulp-webserver'); 
-//var webserver = require('gulp-connect');
 
 //File Paths
 var less_files = ['build/css/**.less', 'build/**.less', 'build/themes/**.less', '!build/themes/helpers.less'];
-var html_files = ['build/**/**.html', 'build/**/**.cfm'];
+var html_files = ['build/**/**.html', 'build/**/**.cfm', 'build/**.cfm'];
 var js_files   = ['build/js/**.js'];
 
 gulp.task('bootstrap', function () {
@@ -36,7 +35,7 @@ gulp.task('copy-html', function () {
 
 gulp.task('scripts', function () {
     return gulp.src(js_files)
-            //.pipe(cached('scripts'))
+            .pipe(cached('scripts'))
             .pipe(copy('dist', { prefix: 1 }))
             .on('error', outputError);
 });
@@ -51,7 +50,7 @@ gulp.task('less', function () {
 
 gulp.task('cssmin', function () {
     return gulp.src(['dist/**.css', 'dist/themes/**.css', '!dist/*.min.css', '!dist/themes/*.min.css'])
-            .pipe(cached('cssmin'))
+            //.pipe(cached('cssmin'))
             .pipe(cssmin())
             .pipe(rename({ suffix: '.min' }))
             .on('error', outputError)
