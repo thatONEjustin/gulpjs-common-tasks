@@ -42,3 +42,16 @@ $ npm install --global gulp-cli
 ```sh
 $ npm install
 ```
+
+#### 4. copy over the gulpfile.js from this repository
+
+__https://github.com/thatONEjustin/gulpjs-common-tasks/blob/master/gulpfile.js__
+
+#### 4. run gulp
+
+__Tasks run as follows: gulp.task('default', ['copy-html', 'scripts', 'bootstrap', 'less', 'cssmin', 'watch']);__
+__It's important to note that the new WATCH task is an actual stream, if a file has an error it will kill the task but still keep WATCH running__
+
+```sh
+M:\path\to\site\> gulp
+```
