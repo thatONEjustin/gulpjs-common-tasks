@@ -3,100 +3,135 @@
 //Main gulp pointer
 var gulp = require('gulp');
 
+//watch
+var newer = require('gulp-newer');
+var del = require('del');
+var path = require('path');
+
 //Plugins
-var cached = require('gulp-cached');
-var copy = require('gulp-copy');
-var watch = require('gulp-watch');
 var less = require('gulp-less');
 var cssmin = require('gulp-minify-css');
 var rename = require('gulp-rename');
 
-//File Paths
+var paths = {
+    assets:  'build/assets/**',
+    algolia: 'build/src/**',
+    fonts:   'build/fonts/**',
+    scripts: 'build/js/**.js',
+    images:  ['build/img/**.{jpg,gif,svg,png}', 'build/img/**/**.{jpg,gif,svg,png}', '!build/img/**.db', '!build/img/**/**.db'],
+    cfm:     'build/**.cfm', 
+    less:    ['build/**.less', 'build/themes/**.less', '!build/**/helpers.less'],
+    css:     ['build/css/**.css', '!build/css/**.less']  
+}
 
-//site_files only used for the build task.
-var site_files = ['build/**/**.*', '!build/**/helpers.less'];
+var base = { base: 'build' };
+var dest = 'dist';
 
-//These are used for all the other tasks.
-var html_files = ['build/**/**.html', 'build/**/**.cfm', 'build/**.cfm'];
-var less_files = ['build/css/**.less', 'build/**.less', 'build/themes/**.less', '!build/themes/helpers.less'];
-var js_files   = ['build/js/**.js'];
-var image_files = ['build/img/**/**.{jpg,gif,png,svg}', 'build/img/**.{jpg,gif,png,svg}'];
-
-//Copy all site files over into the /dist/ directory.
-gulp.task('copy-build', function() {
-    return gulp.src(site_files)
-            .pipe(cached('build'))
-            .pipe(copy('dist', { prefix: 1 }))
-            .on('error', outputError);
+gulp.task('cfm', function () {
+    return gulp.src(paths.cfm, base)
+               .pipe(newer(dest))
+               .pipe(gulp.dest(dest))
+               .on('error', outputError);
 });
 
-//Copy over bootstrap.min.css file (enforcing standards)
-gulp.task('bootstrap', function () {
-    return gulp.src(['build/css/bootstrap.min.css'])
-            .pipe(cached('bootstrap'))
-            .pipe(copy('dist', { prefix: 1 }))
-            .on('error', outputError);
+gulp.task('images', function (done) {
+    return gulp.src(paths.images, base)
+               .pipe(newer(dest))
+               .pipe(gulp.dest(dest))
+               .on('error', outputError);
 });
 
-//Copy over /img/ directory. 
-gulp.task('copy-img', function () {
-    return gulp.src(image_files)
-            .pipe(cached('copy-img'))
-            .pipe(copy('dist', { prefix: 1 }))
-            .on('error', outputError);
-});
-
-//Copy over any .html/.cfm type file over. 
-gulp.task('copy-html', function () {
-    return gulp.src(html_files)
-            .pipe(cached('copy'))
-            .pipe(copy('dist', { prefix: 1 }))
-            .on('error', outputError);
-});
-
-//Copy scripts/js over to /dist/
 gulp.task('scripts', function () {
-    return gulp.src(js_files)
-            .pipe(cached('scripts'))
-            .pipe(copy('dist', { prefix: 1 }))
-            .on('error', outputError);
+    return gulp.src(paths.scripts, base)
+               .pipe(newer(dest))
+               .pipe(gulp.dest(dest))
+               .on('error', outputError);
 });
 
-//Process .LESS files into .css 
+gulp.task('css', function () {
+    return gulp.src(paths.css, base)
+               .pipe(newer(dest))
+               .pipe(gulp.dest(dest))
+               .on('error', outputError);
+});
+
 gulp.task('less', function () {
-    return gulp.src(less_files, { base: 'build' })
-            .pipe(cached('less'))
-            .pipe(less())
-            .on('error', outputError)
-            .pipe(gulp.dest('dist'));
+    return gulp.src(paths.less, base)
+               .pipe(newer(dest))
+               .pipe(less())               
+               .pipe(gulp.dest(dest))
+               .on('error', outputError)
+               .pipe(cssmin())               
+               .pipe(rename( { suffix: '.min' }))
+               .pipe(gulp.dest(dest))
+               .on('error', outputError);
 });
 
-//Process .CSS files in /dist/ into .min.css
-gulp.task('cssmin', function () {
-    return gulp.src(['dist/**.css', 'dist/themes/**.css', '!dist/*.min.css', '!dist/themes/*.min.css'])            
-            .pipe(cssmin())
-            .pipe(rename({ suffix: '.min' }))
-            .on('error', outputError)
-            .pipe(gulp.dest(function(file) {
-                return file.base;
-            }));   
+//Process external assets task. 
+//Basically downloaded plugins / frameworks should be processed here
+//In this case I'm processing an algolia folder as well
+gulp.task('external', function () {
+    return gulp.src([paths.assets, paths.algolia, paths.fonts], base)
+               .pipe(newer(dest))
+               .pipe(gulp.dest(dest))
+               .on('error', outputError);
 });
 
-//Current watch task.
-gulp.task('watch', function () {    
-    gulp.watch(less_files, ['less', 'cssmin']);
-    gulp.watch(html_files, ['copy-html']);
-    gulp.watch(js_files, ['scripts']);
-    gulp.watch(image_files, ['copy-img']);
+//Watch task
+gulp.task('watch', function () {
+    
+    //Watchers for basic assets. This will sync the build folder 
+    //with the dist folder. 
+    var watchHtml    = gulp.watch(paths.cfm, ['cfm']);
+    var watchImages  = gulp.watch(paths.images, ['images']);    
+    var watchCss     = gulp.watch(paths.css, ['css']);    
+    var watchScripts = gulp.watch(paths.scripts, ['scripts']);
+    var watchExt     = gulp.watch([paths.assets, paths.algolia, paths.fonts], ['external']);
+
+    //@TODO: Less file is a little more complex, and doesn't do 
+    //       a simple glob > src > dest. 
+    gulp.watch(paths.less, ['less']);           
+
+    
+    watchExt.on('change', function (ev) {
+        if(ev.type === 'deleted') {
+            del(path.relative('./', ev.path).replace('build', 'dist'));
+        }
+    }).on('error', outputError);    
+
+    watchHtml.on('change', function (ev) {
+        if(ev.type === 'deleted') {
+            del(path.relative('./', ev.path).replace('build', 'dist'));
+        }
+    }).on('error', outputError);
+
+    watchImages.on('change', function (ev) {
+        if(ev.type === 'deleted') {
+            del(path.relative('./', ev.path).replace('build', 'dist'));
+        }
+    }).on('error', outputError);
+
+    watchCss.on('change', function (ev) {
+        if(ev.type === 'deleted') {
+            del(path.relative('./', ev.path).replace('build', 'dist'));
+        }
+    }).on('error', outputError);      
+
+    watchScripts.on('change', function (ev) {
+        if(ev.type === 'deleted') {
+            del(path.relative('./', ev.path).replace('build', 'dist'));
+        }
+    }).on('error', outputError);
 });
 
-//Current build task.
-gulp.task('build', ['copy-build', 'scripts', 'less', 'cssmin']);
+//Main gulp task definitions
+gulp.task('build', ['external','cfm', 'images', 'css', 'scripts', 'less']);
+gulp.task('dev', ['watch']);
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['build', 'watch']);
 
+//Output Error catch
 function outputError (error) {
     console.log(error.toString());
-
     this.emit('end');
 }
