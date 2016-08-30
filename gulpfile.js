@@ -18,7 +18,7 @@ var paths = {
     algolia: 'build/src/**',
     fonts:   'build/fonts/**',
     scripts: 'build/js/**.js',
-    images:  ['build/img/**.{jpg,gif,svg,png}', 'build/img/**/**.{jpg,gif,svg,png}', '!build/img/**.db', '!build/img/**/**.db'],
+    images:  ['build/img/**.{jpg,gif,svg,png}', 'build/img/**/**.{jpg,gif,svg,png}', 'build/img/**/**/**.{jpg,gif,svg,png}', '!build/img/**.db', '!build/img/**/**.db'],
     cfm:     'build/**.cfm', 
     less:    ['build/**.less', 'build/themes/**.less', '!build/**/helpers.less'],
     css:     ['build/css/**.css', '!build/css/**.less']  
