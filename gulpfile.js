@@ -58,7 +58,8 @@ gulp.task('css', function () {
 gulp.task('less', function () {
     return gulp.src(paths.less, base)
                .pipe(newer(dest))
-               .pipe(less())               
+               .pipe(less())
+               .on('error', outputError)                    
                .pipe(gulp.dest(dest))
                .on('error', outputError)
                .pipe(cssmin())               
